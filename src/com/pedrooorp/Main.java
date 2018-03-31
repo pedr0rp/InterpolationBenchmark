@@ -6,43 +6,26 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
 
-    private static final int MIN = 0;
-    private static final int MAX = 999999;
+    private static final BigDecimal MIN = new BigDecimal(0.0f);
+    private static final BigDecimal MAX= new BigDecimal(999999.0f);
     private static final int SCALE = 4;
     private static final int DOMAIN_SIZE = 100;
 
 
     public static void main(String[] args) {
-        BigDecimal[] xBD  = generateArray(DOMAIN_SIZE , SCALE, new BigDecimal(MIN), new BigDecimal(MAX));
-        BigDecimal[] yBD  = generateArray(DOMAIN_SIZE , SCALE, new BigDecimal(MIN), new BigDecimal(MAX));
 
-        printXY(xBD, yBD);
+        Point<BigDecimal>[] xyBD = new Point[DOMAIN_SIZE];
 
-        long[] xL = convert(xBD);
-        long[] yL = convert(yBD);
-
-        printXY(xL, yL);
-
-    }
-
-    static BigDecimal[] generateArray(int size, int scale, BigDecimal min, BigDecimal max) {
-        BigDecimal[] array = new BigDecimal[size];
-        for(int i = 0; i < size; i++) array[i] = generateRandomBigDecimal(scale, min, max);
-        return array;
-    }
-
-    static long[] convert(BigDecimal[] array) {
-
-        long[] newArray = new long[array.length];
-
-        if(array.length > 1) {
-            int scale = array[0].scale();
-            for(int i = 0; i < array.length; i++) {
-                newArray[i] = array[i].scaleByPowerOfTen(scale).longValue();
-            }
+        for(int i = 0; i < xyBD.length; i++) {
+            xyBD[i] = new Point<>(generateRandomBigDecimal(SCALE,  MIN, MAX),generateRandomBigDecimal(SCALE, MIN, MAX));
+            System.out.println(xyBD[i]);
         }
 
-        return newArray;
+
+    }
+
+    static long convert(BigDecimal value) {
+        return  value.scaleByPowerOfTen(value.scale()).longValue();
     }
 
     static BigDecimal generateRandomBigDecimal(int scale, BigDecimal min, BigDecimal max) {
@@ -50,11 +33,6 @@ public class Main {
         return number.setScale(scale, RoundingMode.DOWN);
     }
 
-    static void printXY(BigDecimal[] x, BigDecimal[] y) {
-        for(int i = 0; i < x.length; i++) System.out.println("X " + x[i] + " Y " + y[i]);
-    }
 
-    static void printXY(long[] x, long[] y) {
-        for(int i = 0; i < x.length; i++) System.out.println("X " + x[i] + " Y " + y[i]);
-    }
+
 }
