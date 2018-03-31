@@ -9,11 +9,11 @@ public class Main {
     private static final int SCALE = 4;
     
     private static final BigDecimal MIN = new BigDecimal(0.0f);
-    private static final BigDecimal MAX= new BigDecimal(100.0f);
-    private static final int QT_POINTS = 100;
+    private static final BigDecimal MAX = new BigDecimal(5.0f);
+    private static final int QT_POINTS = 5;
     private static final BigDecimal START  = new BigDecimal(0.0f);
-    private static final BigDecimal END  = new BigDecimal(100.0f);
-    private static final BigDecimal STEP  = new BigDecimal(1f/3);
+    private static final BigDecimal END  = new BigDecimal(5.0f);
+    private static final BigDecimal STEP  = new BigDecimal(1f/2);
 
     private static final RoundingMode ROUNDING_MODE = RoundingMode.DOWN;
 
@@ -25,12 +25,19 @@ public class Main {
         Point<Long>[] xyL = new Point[QT_POINTS];
 
         for(int i = 0; i < xyBD.length; i++) {
-            xyBD[i] = new Point<>(new BigDecimal(i), randomBigDecimal(SCALE, MIN, MAX));
+            xyBD[i] = new Point<>(new BigDecimal(i), randomBigDecimal(MIN, MAX, SCALE));
             xyL[i] = new Point<>(convert(xyBD[i].x), convert(xyBD[i].y));
         }
 
+
+        Interpolation.roundingMode = ROUNDING_MODE;
+
+
+
         CSVFile fileBD = new CSVFile("BigDecimal", xyBD);
         CSVFile fileL = new CSVFile("Long", xyL);
+
+        Interpolation.linear(xyBD , START, END, STEP, SCALE);
 
         try {
             fileBD.save();
@@ -39,16 +46,13 @@ public class Main {
             e.printStackTrace();
         }
 
-        Interpolation.roundingMode = ROUNDING_MODE;
-        Interpolation.linear(xyBD , START, END, STEP, SCALE);
-
     }
 
-    static long convert(BigDecimal value) {
+    private static long convert(BigDecimal value) {
         return value.scaleByPowerOfTen(value.scale()).longValue();
     }
 
-    static BigDecimal randomBigDecimal(int scale, BigDecimal min, BigDecimal max) {
+    private static BigDecimal randomBigDecimal(BigDecimal min, BigDecimal max, int scale) {
         BigDecimal number = min.add(new BigDecimal(Math.random()).multiply(max.subtract(min)));
         return number.setScale(scale, ROUNDING_MODE);
     }

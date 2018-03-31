@@ -25,7 +25,11 @@ public class CSVFile {
     public void save() throws IOException {
 
         List<String> lines = new ArrayList<>();
-        for(int i = 0; i < points.length; i++) lines.add(points[i].x + ";" + points[i].y);
+
+        for(int i = 0; i < points.length; i++) {
+            lines.add(points[i].x + ";" + points[i].y);
+        }
+
         System.out.println("Saving on: " + file.toString());
         Files.write(file, lines, Charset.forName("UTF-8"));
 
