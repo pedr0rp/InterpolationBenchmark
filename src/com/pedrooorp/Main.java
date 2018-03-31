@@ -2,28 +2,59 @@ package com.pedrooorp;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
 
-    public static void main(String[] args) {
-        BigDecimal[] array = generateArray(100, 5, new BigDecimal(0.0f), new BigDecimal(100.0f));
+    private static final int MIN = 0;
+    private static final int MAX = 999999;
+    private static final int SCALE = 4;
+    private static final int DOMAIN_SIZE = 100;
 
-        printArray(array);
+
+    public static void main(String[] args) {
+        BigDecimal[] xBD  = generateArray(DOMAIN_SIZE , SCALE, new BigDecimal(MIN), new BigDecimal(MAX));
+        BigDecimal[] yBD  = generateArray(DOMAIN_SIZE , SCALE, new BigDecimal(MIN), new BigDecimal(MAX));
+
+        printXY(xBD, yBD);
+
+        long[] xL = convert(xBD);
+        long[] yL = convert(yBD);
+
+        printXY(xL, yL);
 
     }
 
     static BigDecimal[] generateArray(int size, int scale, BigDecimal min, BigDecimal max) {
         BigDecimal[] array = new BigDecimal[size];
-        for(int i = 0; i < size; i++) array[i] = generateRandomBigDecimal(min, max, scale);
+        for(int i = 0; i < size; i++) array[i] = generateRandomBigDecimal(scale, min, max);
         return array;
     }
 
-    static BigDecimal generateRandomBigDecimal(BigDecimal min, BigDecimal max, int scale) {
+    static long[] convert(BigDecimal[] array) {
+
+        long[] newArray = new long[array.length];
+
+        if(array.length > 1) {
+            int scale = array[0].scale();
+            for(int i = 0; i < array.length; i++) {
+                newArray[i] = array[i].scaleByPowerOfTen(scale).longValue();
+            }
+        }
+
+        return newArray;
+    }
+
+    static BigDecimal generateRandomBigDecimal(int scale, BigDecimal min, BigDecimal max) {
         BigDecimal number = min.add(new BigDecimal(Math.random()).multiply(max.subtract(min)));
         return number.setScale(scale, RoundingMode.DOWN);
     }
 
-    static void printArray(BigDecimal[] array) {
-        for(int i = 0; i < array.length; i++) System.out.println(array[i]);
+    static void printXY(BigDecimal[] x, BigDecimal[] y) {
+        for(int i = 0; i < x.length; i++) System.out.println("X " + x[i] + " Y " + y[i]);
+    }
+
+    static void printXY(long[] x, long[] y) {
+        for(int i = 0; i < x.length; i++) System.out.println("X " + x[i] + " Y " + y[i]);
     }
 }
