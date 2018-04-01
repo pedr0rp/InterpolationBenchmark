@@ -3,45 +3,42 @@ package com.pedrooorp;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
     private static final int SCALE = 4;
     
     private static final BigDecimal MIN = new BigDecimal(0.0f);
-    private static final BigDecimal MAX = new BigDecimal(5.0f);
-    private static final int QT_POINTS = 5;
-    private static final BigDecimal START  = new BigDecimal(0.0f);
-    private static final BigDecimal END  = new BigDecimal(5.0f);
-    private static final BigDecimal STEP  = new BigDecimal(1f/2);
+    private static final BigDecimal MAX = new BigDecimal(10.0f);
+    private static final int QT_POINTS = 10;
+    private static final BigDecimal STEP  = new BigDecimal(0.002f);
 
     private static final RoundingMode ROUNDING_MODE = RoundingMode.DOWN;
 
-
-
     public static void main(String[] args) {
+
+        List<CSVFile> files = new ArrayList<>();
 
         Point<BigDecimal>[] xyBD = new Point[QT_POINTS];
         Point<Long>[] xyL = new Point[QT_POINTS];
 
         for(int i = 0; i < xyBD.length; i++) {
-            xyBD[i] = new Point<>(new BigDecimal(i), randomBigDecimal(MIN, MAX, SCALE));
+            xyBD[i] = new Point<>(new BigDecimal(i*2), randomBigDecimal(MIN, MAX, SCALE));
             xyL[i] = new Point<>(convert(xyBD[i].x), convert(xyBD[i].y));
         }
 
-
         Interpolation.roundingMode = ROUNDING_MODE;
 
-
-
-        CSVFile fileBD = new CSVFile("BigDecimal", xyBD);
-        CSVFile fileL = new CSVFile("Long", xyL);
-
-        Interpolation.linear(xyBD , START, END, STEP, SCALE);
+        files.add(new CSVFile("BigDecimal", xyBD));
+        files.add(new CSVFile("Long", xyL));
+        files.add(new CSVFile("linearInterpolation", Interpolation.linear(xyBD, STEP, SCALE)));
 
         try {
-            fileBD.save();
-            fileL.save();
+            for(int i = 0; i < files.size(); i++) {
+                files.get(i).save();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

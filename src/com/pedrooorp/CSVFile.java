@@ -30,7 +30,6 @@ public class CSVFile {
             lines.add(points[i].x + ";" + points[i].y);
         }
 
-        System.out.println("Saving on: " + file.toString());
         Files.write(file, lines, Charset.forName("UTF-8"));
 
     }

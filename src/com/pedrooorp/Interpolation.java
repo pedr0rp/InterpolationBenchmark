@@ -8,48 +8,29 @@ public class Interpolation {
 
     static RoundingMode roundingMode = RoundingMode.DOWN;
 
-    public static Point<BigDecimal>[] linear (Point<BigDecimal>[] points, BigDecimal start, BigDecimal end, BigDecimal step, int scale) {
+    public static Point<BigDecimal>[] linear (Point<BigDecimal>[] points, BigDecimal step, int scale) {
 
-        start = start.setScale(scale, roundingMode);
-        end = end.setScale(scale, roundingMode);
         step = step.setScale(scale, roundingMode);
 
-        BigDecimal[] domain = createDomain(start, end, step, scale);
+        BigDecimal[] domain = createDomain(points[0].x, points[points.length-1].x, step, scale);
         Point<BigDecimal>[] result = new Point[domain.length];
 
-        System.out.println(domain.length);
-
-        for(int i = 0; i < result.length-1; i++) {
-
-            BigDecimal x = domain[i];
-
+       for(int i = 0; i < result.length; i++) {
             for(int j = 0; j < points.length; j++) {
-
-                int next = j+1;
-                if(next >= points.length) {
-                    next--;
-                }
-
-
-                //System.out.println(domain[i] + ">=" + points[j].x + " && " + domain[i] + " <= " +points[next].x);
+                int next  = j+1 < points.length ? j+1 : points.length-1;
 
                 if(domain[i].compareTo(points[j].x) >= 0 && domain[i].compareTo(points[next].x) <= 0) {
-                    BigDecimal xa = points[j].x;
-                    BigDecimal ya = points[j].y;
-                    BigDecimal xb = points[next].x;
-                    BigDecimal yb = points[next].y;
-                    BigDecimal y = ya.add(yb.subtract(ya).multiply(x.subtract(xa).divide(xb.subtract(xa))));
+                    BigDecimal xA = points[j].x;
+                    BigDecimal yA = points[j].y;
+                    BigDecimal xB = points[next].x;
+                    BigDecimal yB = points[next].y;
+                    BigDecimal x = domain[i];
+                    BigDecimal y = yA.add(yB.subtract(yA).multiply(x.subtract(xA).divide(xB.subtract(xA))));
 
                     result[i] = new Point<>(x,y);
-                    //System.out.println(">>>> " +i);
                     break;
                 }
-
             }
-        }
-
-        for(int i = 0; i < result.length; i++) {
-            System.out.println(i + "  " + result[i]);
         }
 
         return result;
